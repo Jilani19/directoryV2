@@ -1,0 +1,1 @@
+﻿import React from "react"; import { cn } from "../../lib/cn"; export function PageWrapper({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) { return ( <main className={cn("flex min-h-screen flex-col w-full bg-background", className)} {...props}> {children} </main> ); }

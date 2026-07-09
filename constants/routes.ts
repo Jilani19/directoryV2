@@ -1,0 +1,1 @@
+﻿export const ROUTES = { HOME: "/", EXPLORE: "/explore", DIRECTORY: "/directory", CATEGORIES: "/categories", ADVERTISE: "/advertise", SUPPORT: "/support", LOGIN: "/login", REGISTER: "/register", COMPANY: (slug: string) => `/company/${slug}`, CATEGORY: (slug: string) => `/category/${slug}` };

@@ -1,0 +1,1 @@
+﻿export interface BaseEntity { id: string; createdAt: string; updatedAt: string; isDeleted: boolean; } export interface PaginationParams { page?: number; limit?: number; search?: string; sortBy?: string; sortOrder?: "asc" | "desc"; }

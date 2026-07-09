@@ -1,0 +1,1 @@
+﻿import { BaseEntity } from "./common"; export interface Company extends BaseEntity { name: string; slug: string; description: string; logoUrl?: string; websiteUrl?: string; email: string; phone?: string; foundedYear?: number; status: "PENDING" | "ACTIVE" | "SUSPENDED"; userId: string; categoryId: string; countryId: string; stateId?: string; cityId?: string; }

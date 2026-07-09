@@ -1,0 +1,1 @@
+﻿import React from "react"; import { cn } from "../../lib/cn"; export function ContentWrapper({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) { return ( <div className={cn("flex-1", className)} {...props}> {children} </div> ); }

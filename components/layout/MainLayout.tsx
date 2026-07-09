@@ -1,0 +1,1 @@
+﻿import React from "react"; import { cn } from "../../lib/cn"; export function MainLayout({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) { return ( <div className={cn("flex min-h-screen flex-col", className)} {...props}> {children} </div> ); }

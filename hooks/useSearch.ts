@@ -1,0 +1,1 @@
+﻿import { useState } from "react"; import { useDebounce } from "./useDebounce"; export function useSearch(delay = 500) { const [searchTerm, setSearchTerm] = useState(""); const debouncedSearch = useDebounce(searchTerm, delay); return { searchTerm, setSearchTerm, debouncedSearch }; }

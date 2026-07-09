@@ -1,0 +1,1 @@
+﻿import { BaseEntity } from "./common"; export interface Advertisement extends BaseEntity { title: string; imageUrl: string; targetUrl: string; position: string; status: "ACTIVE" | "INACTIVE" | "PENDING"; startDate: string; endDate: string; companyId: string; }

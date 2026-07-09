@@ -1,0 +1,1 @@
+﻿export const THEME = { COLORS: { PRIMARY: "#0B4FDF", NAVY: "#0B132B", SUCCESS: "#10B981", DANGER: "#EF4444" } };
