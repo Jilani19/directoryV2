@@ -3,10 +3,13 @@
 import React, { useState, useMemo } from 'react';
 import { File, Download, Search, FileText, FileSpreadsheet, Presentation, Eye } from 'lucide-react';
 import { CompanyDetails } from '../../types';
+import { Pagination } from '../Pagination';
 
 export function DocumentsTab({ company }: { company: CompanyDetails }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const categories = useMemo(() => {
     if (!company.documents) return ["All"];
@@ -23,12 +26,16 @@ export function DocumentsTab({ company }: { company: CompanyDetails }) {
     });
   }, [company.documents, searchQuery, selectedCategory]);
 
+  const startItem = (currentPage - 1) * pageSize;
+  const endItem = startItem + pageSize;
+  const paginatedDocs = filteredDocs.slice(startItem, endItem);
+
   if (!company.documents || company.documents.length === 0) {
     return (
-      <div className="bg-white rounded-3xl p-12 text-center border border-slate-200">
+      <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm">
         <File size={48} className="mx-auto text-slate-300 mb-4" />
-        <h3 className="text-xl font-bold text-slate-800">No Documents Available</h3>
-        <p className="text-slate-500 mt-2">Check back later for company filings and documents.</p>
+        <h3 className="text-xl font-bold text-slate-800">Verified Data Unavailable</h3>
+        <p className="text-slate-500 mt-2">No SEC EDGAR filings, Annual Reports, or ESG reports could be retrieved for this organization.</p>
       </div>
     );
   }
@@ -64,8 +71,8 @@ export function DocumentsTab({ company }: { company: CompanyDetails }) {
                 type="text" 
                 placeholder="Search documents..." 
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               />
             </div>
           </div>
@@ -76,11 +83,11 @@ export function DocumentsTab({ company }: { company: CompanyDetails }) {
           {categories.map(cat => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 ${
+              onClick={() => { setSelectedCategory(cat); setCurrentPage(1); }}
+              className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
                 selectedCategory === cat 
                   ? 'bg-slate-900 text-white' 
-                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
             >
               {cat}
@@ -90,14 +97,14 @@ export function DocumentsTab({ company }: { company: CompanyDetails }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredDocs.map((doc) => (
-          <div key={doc.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-lg transition-shadow flex flex-col justify-between group focus-within:ring-2 focus-within:ring-primary/50">
+        {paginatedDocs.map((doc) => (
+          <div key={doc.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-lg transition-shadow flex flex-col justify-between group focus-within:ring-2 focus-within:ring-blue-500/50">
             <div className="flex items-start gap-4 mb-6">
               <div className="w-14 h-14 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 group-hover:scale-110 transition-transform duration-300">
                 {getFileIcon(doc.type)}
               </div>
               <div className="flex flex-col pt-1">
-                <h3 className="text-base font-black text-slate-900 leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">{doc.title}</h3>
+                <h3 className="text-base font-black text-slate-900 leading-tight mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">{doc.title}</h3>
                 <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                   <span className="px-2 py-1 rounded bg-slate-100">{doc.category}</span>
                   <span className="flex items-center before:content-[''] before:w-1 before:h-1 before:bg-slate-300 before:rounded-full before:mr-2">{doc.size}</span>
@@ -117,7 +124,7 @@ export function DocumentsTab({ company }: { company: CompanyDetails }) {
                 <a 
                   href={doc.url} 
                   download 
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary-700 hover:bg-primary hover:text-white font-bold text-xs transition-colors border border-primary/20 hover:border-primary"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white font-bold text-xs transition-colors border border-blue-200/50 hover:border-blue-600"
                 >
                   <Download size={14} /> Download
                 </a>
@@ -131,6 +138,19 @@ export function DocumentsTab({ company }: { company: CompanyDetails }) {
         <div className="py-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200">
           No documents match your search.
         </div>
+      )}
+
+      {filteredDocs.length > 0 && (
+        <Pagination 
+          currentPage={currentPage}
+          totalItems={filteredDocs.length}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1);
+          }}
+        />
       )}
     </div>
   );

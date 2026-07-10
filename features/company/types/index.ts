@@ -1,5 +1,21 @@
 import { Company as BaseCompany } from "../../directory/mock/companies";
 
+// Internal metadata tracking for verified fields
+export interface IntelligenceField<T> {
+  value: T;
+  source: string; // e.g., 'Wikidata', 'SEC EDGAR', 'OpenFDA'
+  sourceUrl?: string; // Direct link to the source if applicable
+  lastUpdated?: string; // When the source claims it was updated
+  lastSynced: string; // When our engine fetched it
+  verificationStatus: "Verified" | "Unverified" | "Conflict";
+  confidenceScore: number; // 0.0 to 1.0
+  dataFreshness?: string; // e.g., 'Real-time', 'Daily', 'Weekly'
+  apiUsed?: string; // Which API endpoint provided this
+}
+
+// Helper to easily define an intelligence array
+export type IntelligenceArray<T> = IntelligenceField<T[]>;
+
 export interface CompanyDetails extends BaseCompany {
   tagline?: string;
   coverImage?: string;
@@ -24,6 +40,7 @@ export interface CompanyDetails extends BaseCompany {
   videoUrl?: string;
   videoDuration?: string;
   revenue?: string;
+  marketCap?: string;
   globalPresenceCount?: string;
   
   // Hero Metadata
@@ -52,6 +69,9 @@ export interface CompanyDetails extends BaseCompany {
     email?: string;
     phone?: string;
     bio?: string;
+    education?: string;
+    appointmentDate?: string;
+    source?: string;
   }[];
 
   boardOfDirectors?: {
@@ -61,6 +81,11 @@ export interface CompanyDetails extends BaseCompany {
     type: "Independent Director" | "Executive Director" | "Non-Executive Director";
     image: string;
     committeeMemberships?: string[];
+    bio?: string;
+    education?: string;
+    appointmentDate?: string;
+    linkedin?: string;
+    source?: string;
   }[];
 
   quickContacts?: {
@@ -104,12 +129,16 @@ export interface CompanyDetails extends BaseCompany {
     name: string;
     genericName: string;
     type: string; // e.g. "Prescription", "OTC", "API"
-    category: string; // e.g. Tablets, Capsules, Injectables, Vaccines, Biologics, API, Medical Devices
+    category: string;
     dosageForm: string;
     strength: string;
     image: string;
     therapeuticArea: string;
     description?: string;
+    approvalStatus?: string;
+    manufacturer?: string;
+    officialLink?: string;
+    approvalDate?: string;
   }[];
   
   featuredProducts?: {
@@ -128,11 +157,12 @@ export interface CompanyDetails extends BaseCompany {
     address: string;
     city: string;
     country: string;
-    certifications: string[]; // e.g. ["USFDA", "EMA"]
+    certifications: string[]; 
     image?: string;
     productsManufactured?: string[];
     capacity?: string;
     googleMapsLink?: string;
+    coordinates?: { lat: number, lng: number };
   }[];
   
   certificationsList?: {
@@ -169,8 +199,8 @@ export interface CompanyDetails extends BaseCompany {
   
   contactInfo?: {
     address: string;
-    email: string;
-    phone: string;
+    email?: string;
+    phone?: string;
     website: string;
     mapCoordinates: { lat: number; lng: number };
   };
@@ -184,6 +214,16 @@ export interface CompanyDetails extends BaseCompany {
     chartData: { month: string; value: number }[];
     kpis: { label: string; value: string; trend: "up" | "down" | "neutral" }[];
   }[];
+
+  financials?: {
+    revenue?: string;
+    netIncome?: string;
+    ebitda?: string;
+    marketCap?: string;
+    assets?: string;
+    cashFlow?: string;
+    ipoDate?: string;
+  };
   
   keyHighlights?: {
     icon: string;
@@ -223,6 +263,52 @@ export interface CompanyDetails extends BaseCompany {
     postedAt: string;
     applyUrl: string;
   }[];
+  careersPage?: string;
+
+  // Requested Data Sheet Fields
+  lei?: string;
+  jurisdiction?: string;
+  incorporationDate?: string;
+  ceoLinkedIn?: string;
+  fundingStage?: string;
+  fundingTotal?: string;
+  vcPeInvestors?: string[];
+  revenueGrowth?: string;
+  openJobCount?: number;
+  productStage?: string;
+  technologyPlatform?: string;
+  targetMolecule?: string[];
+  patientPopulation?: string;
+  gxpCompliance?: string[];
+  regulatoryAgencies?: string[];
+  whoPrequalification?: boolean;
+  ichCompliance?: boolean;
+  dmfCount?: number;
+  warningLettersCount?: number;
+  partnershipHistory?: string[];
+  mergersAcquisitions?: string[];
+  licensingDeals?: string[];
+  contractServices?: string[];
+  awards?: string[];
+  profileCompletenessScore?: number;
+  
+  // Calendars & Activity
+  ipoTracker?: string;
+  catalystCalendar?: string[];
+  pdufaCalendar?: string[];
+  historicalPdufa?: string[];
+  bioPharmaMeetings?: string[];
+  bioTechInvestors?: string[];
+  fundingActivity?: string[];
+  culture?: string;
+  articles?: string[];
+  events?: string[];
+  library?: string[];
+  
+  // R&D
+  drugsInDevelopment?: number;
+  fdfDossiers?: number;
+  fdaAudited?: boolean;
 
   relatedCompanies?: {
     id: string;
@@ -230,5 +316,69 @@ export interface CompanyDetails extends BaseCompany {
     logo: string;
     industry: string;
     location: string;
+  }[];
+
+  // Clinical Trials
+  clinicalTrials?: {
+    nctId: string;
+    title: string;
+    phase: string;
+    status: string;
+    enrollment: number;
+    locations: number;
+    countries: string[];
+    investigator?: string;
+    sponsor: string;
+    completionDate?: string;
+    url: string;
+  }[];
+
+  // Patents
+  patents?: {
+    patentNumber: string;
+    title: string;
+    inventors: string[];
+    assignee: string;
+    grantDate: string;
+    status: string;
+    url: string;
+  }[];
+
+  // Publications
+  publications?: {
+    pmid: string;
+    title: string;
+    journal: string;
+    authors: string[];
+    publicationDate: string;
+    doi?: string;
+    abstract?: string;
+    url: string;
+  }[];
+
+  // NIH RePORTER Grants
+  grants?: {
+    id: string;
+    title: string;
+    amount: number;
+    agency: string;
+    year: string;
+    piName?: string;
+  }[];
+
+  // Open Targets / ChEMBL
+  drugTargets?: {
+    targetName: string;
+    disease: string;
+    score: number;
+    phase?: number;
+  }[];
+
+  // ORCID Researchers
+  researchers?: {
+    orcid: string;
+    name: string;
+    affiliation: string;
+    url: string;
   }[];
 }

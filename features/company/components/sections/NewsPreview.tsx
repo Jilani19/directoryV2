@@ -5,15 +5,7 @@ import { ArrowRight, Newspaper } from 'lucide-react';
 
 export function NewsPreview({ company, onTabChange }: { company: CompanyDetails, onTabChange?: (tabId: string) => void }) {
   if (!company.latestNews || company.latestNews.length === 0) {
-    return (
-      <div className="flex flex-col gap-4 mt-8">
-        <h3 className="text-xl font-black text-slate-900">Latest News & Media</h3>
-        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center flex flex-col items-center justify-center text-slate-500">
-          <Newspaper size={24} className="mb-2 text-slate-300" />
-          <p className="font-bold text-sm">No public news found</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   const items = company.latestNews.slice(0, 3);

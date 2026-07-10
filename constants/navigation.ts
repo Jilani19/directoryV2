@@ -1,1 +1,1 @@
-﻿export const NAV_LINKS = [ { label: "Explore", href: "/explore" }, { label: "Directory", href: "/directory" }, { label: "Categories", href: "/categories" }, { label: "Advertise", href: "/advertise" }, { label: "Support", href: "/support" } ];
+export const NAV_LINKS = [ { label: "Directory", href: "/directory" }, { label: "Categories", href: "/categories" }, { label: "Advertise", href: "/advertise" }, { label: "Support", href: "/support" } ];

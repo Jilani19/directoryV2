@@ -20,42 +20,50 @@ export function AboutCompany({ company }: { company: CompanyDetails }) {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 mt-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                <Building2 size={18} />
+            {company.companyType && (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                  <Building2 size={18} />
+                </div>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Company Type</span>
+                  <span className="text-sm font-bold text-slate-800 truncate">{company.companyType}</span>
+                </div>
               </div>
-              <div className="flex flex-col overflow-hidden">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Company Type</span>
-                <span className="text-sm font-bold text-slate-800 truncate">{company.companyType || 'No public data'}</span>
+            )}
+            {(company.industry || company.category) && (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                  <Briefcase size={18} />
+                </div>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Industry</span>
+                  <span className="text-sm font-bold text-slate-800 truncate">{company.industry || company.category}</span>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                <Briefcase size={18} />
+            )}
+            {company.revenue && (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <Banknote size={18} />
+                </div>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Revenue</span>
+                  <span className="text-sm font-bold text-slate-800 truncate">{formatCurrency(company.revenue)}</span>
+                </div>
               </div>
-              <div className="flex flex-col overflow-hidden">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Industry</span>
-                <span className="text-sm font-bold text-slate-800 truncate">{company.industry || company.category || 'No public data'}</span>
+            )}
+            {company.countriesServed && (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                  <Globe2 size={18} />
+                </div>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Global Presence</span>
+                  <span className="text-sm font-bold text-slate-800 truncate">{company.countriesServed}+ Countries</span>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                <Banknote size={18} />
-              </div>
-              <div className="flex flex-col overflow-hidden">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Revenue</span>
-                <span className="text-sm font-bold text-slate-800 truncate">{company.revenue ? formatCurrency(company.revenue) : 'No public data'}</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-                <Globe2 size={18} />
-              </div>
-              <div className="flex flex-col overflow-hidden">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Global Presence</span>
-                <span className="text-sm font-bold text-slate-800 truncate">{company.countriesServed ? `${company.countriesServed}+ Countries` : 'No public data'}</span>
-              </div>
-            </div>
+            )}
           </div>
           
           <button className="flex items-center gap-2 text-primary font-bold hover:text-primary-600 transition-colors self-start group">

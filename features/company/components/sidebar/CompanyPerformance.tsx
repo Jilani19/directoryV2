@@ -14,14 +14,7 @@ export function CompanyPerformance({ performance }: { performance: CompanyDetail
   const currentPerformance = performanceArray.find(p => p.period === selectedPeriod) || performanceArray[0];
 
   if (!currentPerformance) {
-    return (
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col h-full">
-        <h3 className="text-xl font-black text-slate-900 mb-6">Company Performance</h3>
-        <div className="flex-1 flex items-center justify-center text-slate-400 font-medium p-6 text-center">
-          Performance data not available.
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // Standard UI Bars Chart logic
@@ -29,7 +22,7 @@ export function CompanyPerformance({ performance }: { performance: CompanyDetail
   const maxData = Math.max(...chartData.map(d => d.value), 1); // Avoid division by zero
   
   return (
-    <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+    <div className="bg-white rounded-3xl p-6 border border-slate-200/60 shadow-sm animate-in fade-in duration-500 hover:shadow-md transition-all">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-black text-slate-900">Company Performance</h3>
         {performanceArray.length > 1 && (

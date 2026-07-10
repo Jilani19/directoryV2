@@ -1,8 +1,5 @@
-import React from "react";
-import { ComingSoon } from "@/components/ui/ComingSoon";
+import { redirect } from "next/navigation";
 
-export default function Page() {
-  return (
-    <ComingSoon title={"Company"} />
-  );
+export default function CompanyIndexPage() {
+  redirect("/directory");
 }

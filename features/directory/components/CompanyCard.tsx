@@ -153,7 +153,8 @@ export const CompanyCard = React.memo(function CompanyCard(company: Company & { 
       {/* 4. Bottom CTA */}
       <div className="p-3 mt-auto bg-white border-t border-slate-100/60 group-hover:bg-primary/[0.02] transition-colors">
         <Link 
-          href={`/company/${companySlug}`} 
+          href={`/company/${companySlug}`}
+          prefetch={false}
           className="flex items-center justify-center w-full py-2.5 rounded-xl text-[13px] font-black text-primary hover:text-white hover:bg-primary hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 gap-2 group/btn focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
         >
           View Full Profile

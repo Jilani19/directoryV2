@@ -130,7 +130,8 @@ export function CompanyFeatureCard({ company }: CompanyFeatureCardProps) {
       {/* Bottom CTA */}
       <div className="p-3 mt-auto bg-white/5 border-t border-white/10 group-hover:bg-white/10 transition-colors z-10">
         <Link 
-          href={`/company/${companySlug}`} 
+          href={`/company/${companySlug}`}
+          prefetch={false}
           className="flex items-center justify-center w-full py-3.5 rounded-xl text-sm font-black text-slate-900 bg-white hover:bg-primary-50 hover:text-primary shadow-lg transition-all duration-300 gap-2 group/btn focus:outline-none focus-visible:ring-4 focus-visible:ring-white/30"
         >
           View Full Profile

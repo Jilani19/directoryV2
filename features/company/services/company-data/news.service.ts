@@ -39,10 +39,10 @@ export async function getCompanyNews(tickerOrName: string): Promise<NewsItem[] |
       id: `news-${index}`,
       title: item.title,
       date: new Date(item.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-      image: item.thumbnail || "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=300",
+      image: item.thumbnail,
       category: "Media Coverage",
       summary: item.description?.replace(/<[^>]*>?/gm, '').substring(0, 120) + "...", // Strip HTML
-      source: item.author || "Yahoo Finance",
+      source: item.author || "Google News",
       url: item.link
     }));
 

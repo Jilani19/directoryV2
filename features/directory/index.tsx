@@ -33,14 +33,9 @@ export function DirectoryPage() {
     proximityStats
   } = useCompanyDirectory(locationObj.activeLocation);
 
-  // Simulate network latency when filters/sort/page changes
+  // Removed artificial latency simulation to ensure instant client-side rendering
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsSimulatingLoad(true);
-    const timer = setTimeout(() => {
-      setIsSimulatingLoad(false);
-    }, 600); // 600ms fake load to show skeletons
-    return () => clearTimeout(timer);
+    setIsSimulatingLoad(false);
   }, [activeFilters, sortOption, currentPage, viewMode]);
 
   return (

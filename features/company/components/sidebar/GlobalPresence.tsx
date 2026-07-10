@@ -11,21 +11,12 @@ export function GlobalPresence({ company, onTabChange }: { company: CompanyDetai
   const currentRegion = presence?.find(p => p.region === activeRegion) || presence?.[0];
 
   if (!presence || presence.length === 0 || !currentRegion) {
-    return (
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col h-full">
-        <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
-          <Globe2 size={20} className="text-primary" /> Global Presence
-        </h3>
-        <div className="flex-1 flex items-center justify-center text-slate-400 font-medium p-6 text-center">
-          Global presence data not available.
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col h-full">
-      <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
+    <div className="bg-white rounded-3xl p-6 border border-slate-200/60 shadow-sm flex flex-col h-full animate-in fade-in duration-500 hover:shadow-md transition-all">
+      <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2 tracking-tight">
         <Globe2 size={20} className="text-primary" /> Global Presence
       </h3>
       
