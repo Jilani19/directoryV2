@@ -1,14 +1,16 @@
 import React from "react";
 import { CompanyCard } from "./CompanyCard";
 import { CompanyListCard } from "./CompanyListCard";
+import { TableView } from "./TableView";
+import { AGGridTable } from "./AGGridTable";
 import { CompanyCardSkeleton, CompanyListCardSkeleton } from "./Skeletons";
-import { Company } from "../mock/companies";
+import { Company } from "../services/company.service";
 
 import { ActiveLocation } from "../hooks/useLocation";
 
 interface CompanyGridProps {
   companies: Company[];
-  viewMode: "grid" | "list";
+  viewMode: "grid" | "compact" | "ag-grid" | "table" | "map";
   isLoading?: boolean;
   activeLocation?: ActiveLocation | null;
 }
@@ -16,7 +18,7 @@ interface CompanyGridProps {
 export function CompanyGrid({ companies, viewMode, isLoading, activeLocation }: CompanyGridProps) {
   
   if (isLoading) {
-    if (viewMode === "list") {
+    if (viewMode === "compact" || viewMode === "table") {
       return (
         <div className="flex flex-col gap-4 w-full">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -26,8 +28,8 @@ export function CompanyGrid({ companies, viewMode, isLoading, activeLocation }: 
       );
     }
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 w-full">
-        {Array.from({ length: 8 }).map((_, i) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
+        {Array.from({ length: 9 }).map((_, i) => (
           <CompanyCardSkeleton key={i} />
         ))}
       </div>
@@ -36,17 +38,17 @@ export function CompanyGrid({ companies, viewMode, isLoading, activeLocation }: 
 
   if (companies.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-300 rounded-3xl bg-slate-50 w-full">
-        <div className="w-24 h-24 mb-6 rounded-full bg-slate-100 flex items-center justify-center">
+      <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-300 dark:border-white/20 rounded-3xl bg-slate-50 dark:bg-white/5 w-full">
+        <div className="w-24 h-24 mb-6 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
           <span className="text-4xl opacity-50">🔍</span>
         </div>
-        <h3 className="text-2xl font-bold text-slate-900 mb-3">No companies found</h3>
-        <p className="text-slate-500 max-w-md text-sm leading-relaxed mb-6">
+        <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">No companies found</h3>
+        <p className="text-slate-500 dark:text-slate-400 max-w-md text-sm leading-relaxed mb-6">
           We couldn&apos;t find any companies matching your current filters. Try adjusting your search criteria, removing some filters, or clearing everything.
         </p>
         <button 
           onClick={() => window.location.reload()} 
-          className="px-6 py-3 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary-600 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="px-6 py-3 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-sm focus:outline-none"
         >
           Clear all filters
         </button>
@@ -54,84 +56,39 @@ export function CompanyGrid({ companies, viewMode, isLoading, activeLocation }: 
     );
   }
 
-  if (viewMode === "list") {
+  if (viewMode === "compact") {
     return (
       <div className="flex flex-col gap-4 w-full">
         {companies.map((company) => (
-          <CompanyListCard key={company.id} {...company} />
+          <CompanyListCard key={company.id} company={company} />
         ))}
       </div>
     );
   }
 
-  // Separate companies into the 3 proximity tiers
-  const nearYouCompanies = companies.filter(c => c.proximityBadge === "Near You");
-  const countryCompanies = companies.filter(c => c.proximityBadge === "Country Match");
-  const globalCompanies = companies.filter(c => !c.proximityBadge || c.proximityBadge === "Global");
+  if (viewMode === "table") {
+    return <TableView companies={companies} />;
+  }
 
-  const hasLocation = !!activeLocation;
+  if (viewMode === "ag-grid") {
+    return <AGGridTable companies={companies} />;
+  }
 
-  const renderSection = (title: string, subtitle: string | React.ReactNode, list: Company[]) => {
-    if (list.length === 0) return null;
+  if (viewMode === "map") {
     return (
-      <div className="mb-12">
-        <div className="mb-8">
-          <h3 className="text-2xl md:text-3xl font-black text-slate-900 flex items-center gap-2 tracking-tight">
-            {title}
-          </h3>
-          {subtitle && (
-            <p className="text-base font-semibold text-slate-500 mt-2">
-              {subtitle}
-            </p>
-          )}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 xl:gap-8 w-full">
-          {list.map((company) => (
-            <CompanyCard key={company.id} {...company} />
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  if (hasLocation && (nearYouCompanies.length > 0 || countryCompanies.length > 0)) {
-    return (
-      <div className="flex flex-col gap-8 w-full">
-        {nearYouCompanies.length === 0 && activeLocation.city && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-4">
-            <h4 className="text-amber-900 font-bold text-lg mb-1">No companies found near {activeLocation.city}</h4>
-            <p className="text-amber-700 font-medium">
-              Showing companies from {activeLocation.country || "other regions"} instead.
-            </p>
-          </div>
-        )}
-
-        {renderSection(
-          "📍 Companies Near You",
-          activeLocation.city ? `Based in or around ${activeLocation.city}, ${activeLocation.country}` : `Based around your location`,
-          nearYouCompanies
-        )}
-        
-        {renderSection(
-          `🏳️ Other Companies in ${activeLocation.country || "Your Country"}`,
-          "",
-          countryCompanies
-        )}
-
-        {renderSection(
-          "🌍 Global Companies",
-          "International companies outside your region",
-          globalCompanies
-        )}
+      <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-slate-200 dark:border-white/10 rounded-3xl bg-slate-50 dark:bg-slate-900/50 w-full">
+        <span className="text-6xl mb-6">🗺️</span>
+        <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Map View</h3>
+        <p className="text-slate-500 dark:text-slate-400">Map integration is loading...</p>
       </div>
     );
   }
 
-  // Fallback for purely homogeneous lists (no active location or only global)
+  // Fallback to "grid" view
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 xl:gap-8 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
       {companies.map((company) => (
-        <CompanyCard key={company.id} {...company} />
+        <CompanyCard key={company.id} company={company} />
       ))}
     </div>
   );

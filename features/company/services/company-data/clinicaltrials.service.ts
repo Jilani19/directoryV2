@@ -1,51 +1,48 @@
-/**
- * ClinicalTrials Collection Service
- * Fetches clinical studies data from ClinicalTrials.gov API v2.
- */
-
 import { CompanyIdentity } from './identity.service';
 import { CompanyDetails } from '../../types';
 
 const CLINICAL_TRIALS_API = 'https://clinicaltrials.gov/api/v2/studies';
 
-export async function getClinicalTrials(identity: CompanyIdentity, limit: number = 20): Promise<NonNullable<CompanyDetails['clinicalTrials']>> {
+async function fetchAllPages(url: string): Promise<any[]> {
+  let allStudies: any[] = [];
+  let nextPageToken: string | null = null;
+  do {
+    const tokenParam: string = nextPageToken ? `&pageToken=${nextPageToken}` : '';
+    try {
+      const res = await fetch(`${url}${tokenParam}`, { cache: 'no-store' });
+      if (!res.ok) break;
+      const data = await res.json();
+      if (data.studies) {
+        allStudies = allStudies.concat(data.studies);
+      }
+      nextPageToken = data.nextPageToken || null;
+    } catch (err) {
+      break;
+    }
+  } while (nextPageToken && allStudies.length < 500); // safety limit
+  return allStudies;
+}
+
+export async function getClinicalTrials(identity: CompanyIdentity, limit: number = 500): Promise<NonNullable<CompanyDetails['clinicalTrials']>> {
   try {
     if (!identity.name) return [];
 
     const terms = Array.from(new Set([identity.name, identity.legalName, ...identity.aliases])).filter(Boolean);
-    
-    // CT.gov v2 API queries
-    const fetchPromises: Promise<unknown>[] = [];
+    const fetchPromises: Promise<any[]>[] = [];
     
     terms.forEach(term => {
-      // Search by sponsor
-      fetchPromises.push(
-        fetch(`${CLINICAL_TRIALS_API}?query.sponsor=${encodeURIComponent(term)}&pageSize=100&countTotal=true`, { cache: 'no-store' })
-          .then(res => res.ok ? res.json() : null).catch(() => null)
-      );
-      // Search by term (catches investigator, collaborator, condition)
-      fetchPromises.push(
-        fetch(`${CLINICAL_TRIALS_API}?query.term=${encodeURIComponent(term)}&pageSize=100&countTotal=true`, { cache: 'no-store' })
-          .then(res => res.ok ? res.json() : null).catch(() => null)
-      );
+      fetchPromises.push(fetchAllPages(`${CLINICAL_TRIALS_API}?query.sponsor=${encodeURIComponent(term)}&pageSize=100&countTotal=true`));
+      fetchPromises.push(fetchAllPages(`${CLINICAL_TRIALS_API}?query.term=${encodeURIComponent(term)}&pageSize=100&countTotal=true`));
     });
 
-    // Wait for all to finish, with a global timeout wrapper around the promise array
     const results = await Promise.allSettled(fetchPromises);
-    
     const trials: NonNullable<CompanyDetails['clinicalTrials']> = [];
     const uniqueIds = new Set();
     
     for (const res of results) {
-      if (res.status === 'fulfilled' && (res.value as { studies?: unknown[] })?.studies) {
-        for (const study of (res.value as { studies: { protocolSection?: unknown }[] }).studies) {
-          const protocolSection = study.protocolSection as {
-            identificationModule?: { nctId?: string; briefTitle?: string };
-            statusModule?: { overallStatus?: string; completionDateStruct?: { date?: string } };
-            designModule?: { phases?: string[]; enrollmentInfo?: { count?: number } };
-            contactsLocationsModule?: { locations?: { country?: string }[] };
-            sponsorCollaboratorsModule?: { responsibleParty?: { investigatorFullName?: string }; leadSponsor?: { name?: string } };
-          };
+      if (res.status === 'fulfilled' && res.value) {
+        for (const study of res.value) {
+          const protocolSection = study.protocolSection;
           if (!protocolSection) continue;
           
           const identification = protocolSection.identificationModule;
@@ -58,7 +55,7 @@ export async function getClinicalTrials(identity: CompanyIdentity, limit: number
           if (uniqueIds.has(identification.nctId)) continue;
           uniqueIds.add(identification.nctId);
           
-          const countries = Array.from(new Set(locationsModule.map((l: { country?: string }) => l.country).filter(Boolean))) as string[];
+          const countries = Array.from(new Set(locationsModule.map((l: any) => l.country).filter(Boolean))) as string[];
           
           trials.push({
             nctId: identification.nctId,

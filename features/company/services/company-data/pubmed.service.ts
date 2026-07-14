@@ -39,7 +39,7 @@ export async function getCompanyPublications(identity: CompanyIdentity, limit: n
           pmid,
           title: pub.title,
           journal: pub.fulljournalname,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           authors: pub.authors ? pub.authors.map((a: any) => a.name) : [],
           publicationDate: pub.pubdate,
           doi: pub.elocationid && pub.elocationid.includes('doi') ? pub.elocationid.replace('doi: ', '') : undefined,

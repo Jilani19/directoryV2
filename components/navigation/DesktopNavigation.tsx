@@ -19,6 +19,7 @@ export function DesktopNavigation({ className }: DesktopNavigationProps) {
             href={link.href}
             label={link.label}
             isActive={isActive}
+            isExternal={link.isExternal}
           />
         );
       })}

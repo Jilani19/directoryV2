@@ -17,7 +17,7 @@ import sanofiLogo from "@/assets/images/logos/sanofi.png";
 import gskLogo from "@/assets/images/logos/gsk.png";
 import abbvieLogo from "@/assets/images/logos/abbvie.png";
 
-type CompanyType = { name: string; id: string; src: StaticImageData };
+type CompanyType = { name: string; id: string; slug?: string; src: StaticImageData };
 
 const LOCAL_COMPANIES: CompanyType[] = [
   { name: "Pfizer", id: "pfizer", src: pfizerLogo },
@@ -65,7 +65,7 @@ export function TrustedCompanies() {
             {marqueeItems.map((company, index) => (
               <Link 
                 key={`${company.id}-${index}`}
-                href={`/company/${company.id}`}
+                href={`/directory/${company.slug || company.id}/overview`}
                 className="group/card relative flex flex-col items-center justify-center bg-white/70 backdrop-blur-xl rounded-[24px] border border-white shadow-[0_4px_24px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_-12px_rgba(37,99,235,0.15)] hover:border-blue-200 hover:-translate-y-2 transition-all duration-300 mx-3 w-[200px] h-[160px] md:w-[240px] md:h-[180px] px-6 py-6"
                 title={company.name}
               >

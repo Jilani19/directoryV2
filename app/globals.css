@@ -69,24 +69,73 @@
     --card-foreground: #0B132B;
     --border: #E2E8F0;
     --input: #E2E8F0;
-    --ring: #0B4FDF;
     --muted: #F8FAFC;
     --muted-foreground: #64748B;
   }
   .dark {
-    --background: #0B132B;
-    --foreground: #F8FAFC;
-    --card: #0F172A;
-    --card-foreground: #F8FAFC;
-    --border: #1E293B;
-    --input: #1E293B;
-    --ring: #3B82F6;
-    --muted: #1E293B;
-    --muted-foreground: #94A3B8;
+    --background: #2E2348; /* Dark Violet */
+    --foreground: #F9F9FA; /* White */
+    --card: #111111; /* Black */
+    --card-foreground: #F9F9FA; /* White */
+    --border: #221B3A; /* Dark Indigo */
+    --input: #221B3A; /* Dark Indigo */
+    --ring: #6C3FF5; /* Royal Purple */
+    --muted: #221B3A; /* Dark Indigo */
+    --muted-foreground: #C59CFF; /* Lavender */
+    
+    /* Luxury Palette specific overrides */
+    --color-primary-500: #6C3FF5;
+    --color-primary-600: #5A2DD8;
+    --shadow-glass: 0 8px 32px 0 rgba(247, 199, 232, 0.05); /* Soft Pink glow */
+  }
+
+  .ocean {
+    --background: #001B2E; 
+    --foreground: #F0F8FF; 
+    --card: #012A4A; 
+    --card-foreground: #F0F8FF; 
+    --border: #013A63; 
+    --input: #013A63; 
+    --ring: #2A6F97; 
+    --muted: #013A63; 
+    --muted-foreground: #89C2D9; 
+    --color-primary-500: #014F86;
+    --color-primary-600: #01497C;
+  }
+
+  .forest {
+    --background: #0B1C10; 
+    --foreground: #F1FAEE; 
+    --card: #142F1C; 
+    --card-foreground: #F1FAEE; 
+    --border: #1E4620; 
+    --input: #1E4620; 
+    --ring: #2D6A4F; 
+    --muted: #1E4620; 
+    --muted-foreground: #95D5B2; 
+    --color-primary-500: #40916C;
+    --color-primary-600: #2D6A4F;
+  }
+
+  .sunset {
+    --background: #2C0710; 
+    --foreground: #FFF0F3; 
+    --card: #3A0CA3; 
+    --card-foreground: #FFF0F3; 
+    --border: #7209B7; 
+    --input: #7209B7; 
+    --ring: #F72585; 
+    --muted: #480CA8; 
+    --muted-foreground: #FFB5A7; 
+    --color-primary-500: #F72585;
+    --color-primary-600: #B5179E;
   }
   
   * {
     @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground;

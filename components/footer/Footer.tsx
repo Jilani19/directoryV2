@@ -97,9 +97,10 @@ export function Footer() {
                 id="newsletter-email" 
                 name="email" 
                 placeholder="Email address" 
-                className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 h-11" 
+                className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 h-11"
+                suppressHydrationWarning
               />
-              <Button type="submit" className="w-full bg-primary hover:bg-primary-600 text-white h-11">
+              <Button type="submit" className="w-full bg-primary hover:bg-primary-600 text-white h-11" suppressHydrationWarning>
                 Subscribe
               </Button>
             </form>

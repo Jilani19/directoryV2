@@ -1,24 +1,23 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useCompanyDirectory } from "./hooks/useCompanyDirectory";
+import { Container } from "../../components/layout/Container";
 import { Hero } from "./components/Hero";
-import { SearchFilters } from "./components/SearchFilters";
+import { TopSearchBar } from "./components/TopSearchBar";
+import { CategoryHorizontalBar } from "./components/CategoryHorizontalBar";
+import { FilterSidebar } from "./components/FilterSidebar";
 import { ResultsHeader } from "./components/ResultsHeader";
 import { CompanyGrid } from "./components/CompanyGrid";
 import { Pagination } from "./components/Pagination";
-import { Container } from "../../components/layout/Container";
-import { useCompanyDirectory } from "./hooks/useCompanyDirectory";
-import { useLocation } from "./hooks/useLocation";
-import { LocationCard } from "./components/LocationCard";
+import { DirectoryCTA } from "./components/DirectoryCTA";
 
 export function DirectoryPage() {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [isSimulatingLoad, setIsSimulatingLoad] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "compact" | "ag-grid" | "table" | "map">("grid");
+  const isSimulatingLoad = false;
   
-  const locationObj = useLocation();
-
   const {
-    activeFilters,
+    // activeFilters unused directly here
     draftFilters,
     setDraftFilters,
     sortOption, setSortOption,
@@ -27,75 +26,82 @@ export function DirectoryPage() {
     totalItems,
     totalPages,
     paginatedCompanies,
-    availableCountries, availableStates, availableCities, availableCategories,
-    availableIndustries, availableCompanyTypes, availableOwnership, availableFoundedYears, availableEmployeeSizes,
-    applyFilters, clearAllFilters, resetFiltersToActive, emptyFilters,
-    proximityStats
-  } = useCompanyDirectory(locationObj.activeLocation);
+    availableCategories,
+    availableCompanyTypes,
+    // availableProducts unused directly here
+    applyFilters, applyFilterUpdates, clearAllFilters
+  } = useCompanyDirectory();
 
-  // Removed artificial latency simulation to ensure instant client-side rendering
-  useEffect(() => {
-    setIsSimulatingLoad(false);
-  }, [activeFilters, sortOption, currentPage, viewMode]);
+  const availableCertifications = ["FDA Registered", "EU GMP", "WHO GMP", "ISO 9001", "ISO 13485", "USFDA", "EMA", "MHRA", "PMDA", "TGA"];
+  const availableRevenueRanges = ["$0 - $1M", "$1M - $10M", "$10M - $50M", "$50M - $100M", "$100M+"];
+  const availableEmployeeSizes = ["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"];
+  const availableProductsList = ["Pharmaceuticals", "Biotech", "Medical Devices", "Software", "Consulting", "Manufacturing"];
 
+  // removed useEffect to fix lint error
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 w-full">
+    <div className="flex flex-col min-h-screen bg-[#f8fafe] dark:bg-slate-900 w-full">
       <Hero />
       
-      <Container>
-        <div className="flex flex-col w-full">
-          <SearchFilters 
-            draftFilters={draftFilters}
-            setDraftFilters={setDraftFilters}
-            activeFilters={activeFilters}
-            applyFilters={applyFilters}
-            clearAllFilters={clearAllFilters}
-            resetFiltersToActive={resetFiltersToActive}
-            emptyFilters={emptyFilters}
-            availableCountries={availableCountries}
-            availableStates={availableStates}
-            availableCities={availableCities}
-            availableCategories={availableCategories}
-            availableIndustries={availableIndustries}
-            availableCompanyTypes={availableCompanyTypes}
-            availableOwnership={availableOwnership}
-            availableFoundedYears={availableFoundedYears}
-            availableEmployeeSizes={availableEmployeeSizes}
-            locationObj={locationObj}
-          />
-
-          <LocationCard 
-            location={locationObj.activeLocation}
-            isLoading={locationObj.isLoading}
-            proximityStats={proximityStats}
-            onDetectLocation={locationObj.detectLocation}
-            onSetLocation={locationObj.setManualLocation}
+      <Container className="relative z-20 -mt-16 pb-32 max-w-[1400px]">
+        <div className="flex flex-col gap-8">
+          <TopSearchBar 
+            searchQuery={draftFilters.searchQuery}
+            setSearchQuery={(query) => setDraftFilters({...draftFilters, searchQuery: query})}
+            onSearch={applyFilters}
           />
           
-          <ResultsHeader 
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-            sortOption={sortOption}
-            setSortOption={setSortOption}
+          <CategoryHorizontalBar 
+            activeCategory={draftFilters.category}
+            onSelectCategory={(cat) => {
+              applyFilterUpdates({ category: cat });
+            }}
           />
           
-          <CompanyGrid 
-            companies={paginatedCompanies}
-            viewMode={viewMode}
-            isLoading={isSimulatingLoad}
-            activeLocation={locationObj.activeLocation}
-          />
+          <div className="flex flex-col lg:flex-row gap-10 mt-6">
+            <div className="w-full lg:w-[280px] shrink-0">
+              <FilterSidebar 
+                draftFilters={draftFilters}
+                setDraftFilters={setDraftFilters}
+                availableCategories={availableCategories}
+                availableCompanyTypes={availableCompanyTypes}
+                availableCertifications={availableCertifications}
+                availableProducts={availableProductsList}
+                availableRevenueRanges={availableRevenueRanges}
+                availableEmployeeSizes={availableEmployeeSizes}
+                onApply={applyFilters}
+                onClear={clearAllFilters}
+              />
+            </div>
 
-          {totalItems > 0 && (
-            <Pagination 
-               currentPage={currentPage}
-               totalPages={totalPages}
-               totalItems={totalItems}
-               itemsPerPage={itemsPerPage}
-               onPageChange={setCurrentPage}
-               onPageSizeChange={setItemsPerPage}
-            />
-          )}
+            <div className="flex-1 flex flex-col gap-6 min-w-0">
+              <ResultsHeader 
+                viewMode={viewMode}
+                setViewMode={setViewMode}
+                sortOption={sortOption}
+                setSortOption={setSortOption}
+              />
+              
+              <CompanyGrid 
+                companies={paginatedCompanies}
+                viewMode={viewMode}
+                isLoading={isSimulatingLoad}
+                activeLocation={null}
+              />
+
+              {totalItems > 0 && (
+                <Pagination 
+                   currentPage={currentPage}
+                   totalPages={totalPages}
+                   totalItems={totalItems}
+                   itemsPerPage={itemsPerPage}
+                   onPageChange={setCurrentPage}
+                   onPageSizeChange={setItemsPerPage}
+                />
+              )}
+            </div>
+          </div>
+
+          <DirectoryCTA />
         </div>
       </Container>
     </div>

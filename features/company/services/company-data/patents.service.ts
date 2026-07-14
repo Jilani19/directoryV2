@@ -32,10 +32,10 @@ export async function getCompanyPatents(identity: CompanyIdentity, limit: number
 
     const uniquePatents = new Map();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     data.patents.forEach((p: any) => {
       if (!uniquePatents.has(p.patent_number)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const inventors = p.inventors ? p.inventors.map((i: any) => `${i.inventor_name_first} ${i.inventor_name_last}`) : [];
         uniquePatents.set(p.patent_number, {
           patentNumber: p.patent_number,

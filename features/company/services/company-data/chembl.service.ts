@@ -1,4 +1,3 @@
-import { CompanyIdentity } from './identity.service';
 import { CompanyDetails } from '../../types';
 
 const CHEMBL_API = 'https://www.ebi.ac.uk/chembl/api/data';

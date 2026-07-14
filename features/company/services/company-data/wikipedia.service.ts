@@ -45,6 +45,27 @@ export async function getCompanyFromWikipedia(companyName: string): Promise<Wiki
     
     if (!extract) return null;
 
+    // VALIDATION: Ensure this is actually a company and matches our search
+    const cleanCompanyName = companyName.toLowerCase().replace(/(inc\.|corp\.|ltd\.|plc|llc|group|company|pharma|pharmaceuticals)/gi, '').trim();
+    const cleanPageTitle = pageTitle.toLowerCase().replace(/(inc\.|corp\.|ltd\.|plc|llc|group|company|pharma|pharmaceuticals)/gi, '').trim();
+    const firstPara = extract.split('\n')[0].toLowerCase();
+    
+    // If titles are totally different, check for corporate keywords in the first paragraph
+    const corporateKeywords = ['company', 'corporation', 'manufacturer', 'subsidiary', 'firm', 'enterprise', 'business', 'pharmaceutical', 'biotechnology'];
+    const hasCorporateKeyword = corporateKeywords.some(kw => firstPara.includes(kw));
+    
+    if (!cleanPageTitle.includes(cleanCompanyName) && !cleanCompanyName.includes(cleanPageTitle)) {
+      if (!hasCorporateKeyword) {
+        console.warn(`Wikipedia result for ${companyName} rejected. Title: ${pageTitle}. No corporate keywords found.`);
+        return null;
+      }
+    }
+    
+    if (!hasCorporateKeyword && !firstPara.includes(cleanCompanyName)) {
+      console.warn(`Wikipedia result for ${companyName} rejected. Not recognized as a company.`);
+      return null;
+    }
+
     // TODO: In a full implementation, we would also query the infobox via the 'prop=revisions' or Wikidata
     // for exact structured data like founded year, employees, etc. 
     // Since Wikidata is another service we are building, we will delegate structured fields to Wikidata 

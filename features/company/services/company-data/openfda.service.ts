@@ -21,19 +21,38 @@ export interface FdaApplication {
   strength?: string;
 }
 
-export async function getFdaApplications(identity: CompanyIdentity, limit: number = 50): Promise<FdaApplication[]> {
+async function fetchAllFDA(urlBase: string): Promise<any[]> {
+  let allResults: any[] = [];
+  let skip = 0;
+  const limit = 100;
+  
+  while (skip < 2000) { // safety limit
+    try {
+      const url = `${urlBase}&limit=${limit}&skip=${skip}`;
+      const res = await fetch(url, { next: { revalidate: 3600 } });
+      if (!res.ok) break;
+      const data = await res.json();
+      if (!data.results || data.results.length === 0) break;
+      
+      allResults = allResults.concat(data.results);
+      if (data.results.length < limit) break;
+      skip += limit;
+    } catch (err) {
+      break;
+    }
+  }
+  return allResults;
+}
+
+export async function getFdaApplications(identity: CompanyIdentity, limit: number = 500): Promise<FdaApplication[]> {
   try {
     const searchTerms = Array.from(new Set([identity.name, identity.legalName, ...identity.aliases, ...identity.subsidiaries])).filter(Boolean);
     if (searchTerms.length === 0) return [];
 
     const fetchPromises = searchTerms.map(term => {
-      // Query both sponsor_name and applicant with exact phrase matching
       const sponsorQuery = `sponsor_name:"${encodeURIComponent(term)}"+OR+openfda.manufacturer_name:"${encodeURIComponent(term)}"`;
-      const searchUrl = `${OPENFDA_DRUG_API}?search=(${sponsorQuery})&limit=100`;
-      
-      return fetch(searchUrl, { next: { revalidate: 3600 } })
-        .then(res => res.ok ? res.json() : null)
-        .catch(() => null);
+      const searchUrl = `${OPENFDA_DRUG_API}?search=(${sponsorQuery})`;
+      return fetchAllFDA(searchUrl);
     });
 
     const results = await Promise.allSettled(fetchPromises);
@@ -41,8 +60,8 @@ export async function getFdaApplications(identity: CompanyIdentity, limit: numbe
     const uniqueApps = new Map();
 
     for (const res of results) {
-      if (res.status === 'fulfilled' && res.value?.results) {
-        for (const record of res.value.results) {
+      if (res.status === 'fulfilled' && res.value) {
+        for (const record of res.value) {
           if (!record.products || record.products.length === 0) continue;
           if (uniqueApps.has(record.application_number)) continue;
           

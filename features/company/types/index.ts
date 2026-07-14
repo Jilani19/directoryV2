@@ -25,6 +25,8 @@ export interface CompanyDetails extends BaseCompany {
   manufacturingSites?: number;
   countriesServed?: number;
   certificationsCount?: number;
+  rdCenters?: number;
+  globalOffices?: number;
   
   aboutDescription?: string;
   mission?: string;
@@ -266,7 +268,10 @@ export interface CompanyDetails extends BaseCompany {
   careersPage?: string;
 
   // Requested Data Sheet Fields
+  tradeName?: string;
   lei?: string;
+  cik?: string;
+  duns?: string;
   jurisdiction?: string;
   incorporationDate?: string;
   ceoLinkedIn?: string;

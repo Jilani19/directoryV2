@@ -31,7 +31,7 @@ export class LocationService {
 
       const data = await response.json();
       
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       return data.map((item: any) => {
         let city = item.address?.city || item.address?.town || item.address?.village || item.address?.county;
         

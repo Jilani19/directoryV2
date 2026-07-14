@@ -11,22 +11,25 @@ import { InsightCard } from "./InsightCard";
 
 const INSIGHTS = [
   {
-    category: "REGULATORY",
-    title: "FDA issues new guidelines for regulatory compliance",
-    date: "May 13, 2024",
+    category: "INDUSTRY NEWS",
+    title: "Global Pharmaceutical Market Trends 2024",
+    description: "Analysis of key trends shaping the pharmaceutical industry this year.",
+    date: "May 15, 2024",
     readTime: "5 min read"
   },
   {
-    category: "PHARMA",
-    title: "Top 10 Pharma companies driving innovation in 2024",
-    date: "May 10, 2024",
-    readTime: "6 min read"
+    category: "REGULATORY",
+    title: "New FDA Guidelines for Drug Manufacturing",
+    description: "Key updates to FDA guidelines impacting pharmaceutical manufacturers.",
+    date: "May 12, 2024",
+    readTime: "7 min read"
   },
   {
-    category: "BIOTECHNOLOGY",
-    title: "Future of biotechnology: Trends to watch",
-    date: "May 06, 2024",
-    readTime: "7 min read"
+    category: "MARKET INSIGHTS",
+    title: "Biologics Market Growth Analysis",
+    description: "In-depth analysis of biologics market growth and opportunities.",
+    date: "May 10, 2024",
+    readTime: "6 min read"
   }
 ];
 
@@ -59,17 +62,22 @@ export function IndustryInsights() {
   }, [emblaApi, onInit, onSelect]);
 
   return (
-    <Section id="IndustryInsights" className="bg-white py-16 lg:py-24 overflow-hidden">
+    <Section id="IndustryInsights" className="bg-white py-8 lg:py-10 overflow-hidden">
       <Container>
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-6">
 
-          <div className="flex items-end justify-between border-b border-slate-100 pb-4">
-            <h2 className="text-2xl md:text-3xl font-black text-[#0a192f] mb-2 tracking-tight">
-              Latest Industry Insights
-            </h2>
-            <Link href="/articles" className="hidden md:flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-600 transition-colors group mb-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md px-1">
-              View all articles
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          <div className="flex items-end justify-between border-b border-slate-100 pb-3">
+            <div className="flex flex-col">
+              <h2 className="text-xl lg:text-[22px] font-black text-slate-900 mb-0.5 tracking-tight">
+                Latest Insights & Resources
+              </h2>
+              <p className="text-slate-500 font-medium text-[12px] lg:text-[13px]">
+                Stay updated with the latest industry news and insights
+              </p>
+            </div>
+            <Link href="/articles" className="hidden md:flex items-center gap-1 text-[13px] font-bold text-indigo-600 hover:text-indigo-700 transition-colors group mb-1 focus:outline-none">
+              View All Articles
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 

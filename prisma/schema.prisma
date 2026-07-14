@@ -1,0 +1,411 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User[]
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  firstName    String?
+  lastName     String?
+  roleId       String
+  isDeleted    Boolean   @default(false)
+  status       String    @default("ACTIVE")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  companies    Company[]
+  role         Role      @relation(fields: [roleId], references: [id])
+
+  @@index([email])
+}
+
+model Country {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  code      String    @unique
+  isDeleted Boolean   @default(false)
+  companies Company[]
+  states    State[]
+}
+
+model State {
+  id        String    @id @default(uuid())
+  name      String
+  countryId String
+  cities    City[]
+  companies Company[]
+  country   Country   @relation(fields: [countryId], references: [id])
+
+  @@index([countryId])
+}
+
+model City {
+  id        String    @id @default(uuid())
+  name      String
+  stateId   String
+  state     State     @relation(fields: [stateId], references: [id])
+  companies Company[]
+
+  @@index([stateId])
+}
+
+model CompanyCategory {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  companies Company[] @relation("CompanyToCompanyCategory")
+}
+
+model Company {
+  id                  String                 @id @default(uuid())
+  name                String
+  slug                String                 @unique
+  description         String?
+  email               String?
+  phone               String?
+  website             String?
+  logoUrl             String?
+  status              String                 @default("PENDING")
+  isDeleted           Boolean                @default(false)
+  isPublic            Boolean                @default(false)
+  tier                Int?
+  completenessScore   Float?
+  dataSources         String?
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+  userId              String
+  countryId           String?
+  stateId             String?
+  cityId              String?
+  lei                 String?                @unique
+  cik                 String?
+  rorId               String?                @unique
+  wikidataId          String?                @unique
+  openCorpId          String?                @unique
+  rawApiData          String?
+  provenance          String?
+  lastSyncSuccess     DateTime?
+  lastSyncFailure     DateTime?
+  errorMessage        String?
+  history             String?
+  businessOverview    String?
+  therapeuticAreas    String?
+  businessModel       String?
+  keyProducts         String?
+  researchFocus       String?
+  manufacturing       String?
+  geographicPresence  String?
+  regulatoryFootprint String?
+  technologyPlatforms String?
+  businessSegments    String?
+  marketsServed       String?
+  customers           String?
+  recentMilestones    String?
+  recentAcquisitions  String?
+  recentApprovals     String?
+  recentPartnerships  String?
+  corporateHighlights String?
+  legalName           String?
+  tradeName           String?
+  parentCompany       String?
+  ownershipType       String?
+  incorporationDate   String?
+  companyNumber       String?
+  isin                String?
+  duns                String?
+  registeredAddress   String?
+  manufacturingLocs   String?
+  rdCenters           String?
+  globalOffices       String?
+  countriesServed     String?
+  marketCap           String?
+  funding             String?
+  profit              String?
+  employeeGrowth      String?
+  stockPrice          String?
+  latestSecFiling     String?
+  foundedYear         String?
+  employees           String?
+  revenue             String?
+  hqAddress           String?
+  ceo                 String?
+  stockExchange       String?
+  jurisdiction        String?
+  ticker              String?
+  aboutDescription    String?
+  mission             String?
+  vision              String?
+  specializations     String?
+  founder             String?
+  currency            String?
+  socialLinkedin      String?
+  socialTwitter       String?
+  socialFacebook      String?
+  socialYoutube       String?
+  ads                 Advertisement[]
+  city                City?                  @relation(fields: [cityId], references: [id])
+  state               State?                 @relation(fields: [stateId], references: [id])
+  country             Country?               @relation(fields: [countryId], references: [id])
+  user                User                   @relation(fields: [userId], references: [id])
+  clinicalTrials      CompanyClinicalTrial[]
+  competitorsAsTarget CompanyCompetitor[]    @relation("TargetCompany")
+  competitorsAsSource CompanyCompetitor[]    @relation("SourceCompany")
+  documents           CompanyDocument[]
+  executives          CompanyExecutive[]
+  facilities          CompanyFacility[]
+  jobs                CompanyJob[]
+  news                CompanyNews[]
+  patents             CompanyPatent[]
+  publications        CompanyPublication[]
+  subsidiaries        CompanySubsidiary[]
+  inquiries           ContactInquiry[]
+  drugs               Drug[]
+  products            Product[]
+  categories          CompanyCategory[]      @relation("CompanyToCompanyCategory")
+
+  @@index([slug])
+  @@index([name])
+  @@index([userId])
+}
+
+model CompanyCompetitor {
+  id              String   @id @default(uuid())
+  sourceCompanyId String
+  targetCompanyId String
+  createdAt       DateTime @default(now())
+  targetCompany   Company  @relation("TargetCompany", fields: [targetCompanyId], references: [id])
+  sourceCompany   Company  @relation("SourceCompany", fields: [sourceCompanyId], references: [id])
+
+  @@unique([sourceCompanyId, targetCompanyId])
+  @@index([sourceCompanyId])
+  @@index([targetCompanyId])
+}
+
+model Product {
+  id              String   @id @default(uuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  genericName     String?
+  therapeuticArea String?
+  dosageForm      String?
+  approvalStatus  String?
+  officialLink    String?
+  strength        String?
+  manufacturer    String?
+  images          String?
+  status          String   @default("ACTIVE")
+  isDeleted       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  companyId       String
+  company         Company  @relation(fields: [companyId], references: [id])
+
+  @@index([slug])
+  @@index([companyId])
+}
+
+model Drug {
+  id               String   @id @default(uuid())
+  name             String
+  slug             String   @unique
+  activeIngredient String?
+  ndcCode          String?
+  status           String   @default("ACTIVE")
+  isDeleted        Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  companyId        String
+  company          Company  @relation(fields: [companyId], references: [id])
+
+  @@index([slug])
+  @@index([companyId])
+}
+
+model Advertisement {
+  id        String   @id @default(uuid())
+  title     String
+  link      String?
+  imageUrl  String?
+  position  String   @default("SIDEBAR")
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+}
+
+model ContactInquiry {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  message   String
+  status    String   @default("UNREAD")
+  createdAt DateTime @default(now())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+}
+
+model ApiSyncState {
+  id           String   @id @default(uuid())
+  apiName      String   @unique
+  lastCursor   String?
+  lastSyncTime DateTime @default(now())
+  status       String   @default("IDLE")
+  totalRecords Int      @default(0)
+  errorMessage String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model CompanySubsidiary {
+  id        String   @id @default(uuid())
+  name      String
+  companyId String
+  createdAt DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+}
+
+model CompanyExecutive {
+  id        String   @id @default(uuid())
+  name      String
+  title     String?
+  type      String   @default("LEADERSHIP")
+  companyId String
+  createdAt DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+}
+
+model CompanyClinicalTrial {
+  id            String   @id @default(uuid())
+  nctId         String   @unique
+  title         String
+  phase         String?
+  status        String?
+  enrollment    Int?
+  url           String?
+  conditions    String?
+  locations     String?
+  trialCategory String   @default("SPONSOR_REGISTERED")
+  provenance    String?
+  companyId     String
+  createdAt     DateTime @default(now())
+  company       Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+}
+
+model CompanyPublication {
+  id              String   @id @default(uuid())
+  pmid            String?  @unique
+  doi             String?  @unique
+  title           String
+  journal         String?
+  publicationDate String?
+  authors         String?
+  url             String?
+  companyId       String
+  createdAt       DateTime @default(now())
+  company         Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+}
+
+model CompanyPatent {
+  id           String   @id @default(uuid())
+  patentNumber String   @unique
+  title        String
+  status       String?
+  url          String?
+  agencies     String?
+  expiryDate   String?
+  filingDate   String?
+  companyId    String
+  createdAt    DateTime @default(now())
+  company      Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+}
+
+model CompanyNews {
+  id        String   @id @default(uuid())
+  title     String
+  url       String?
+  date      String?
+  source    String?
+  imageUrl  String?
+  companyId String
+  createdAt DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+}
+
+model CompanyJob {
+  id         String   @id @default(uuid())
+  title      String
+  department String?
+  location   String?
+  type       String?
+  url        String?
+  companyId  String
+  createdAt  DateTime @default(now())
+  company    Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+}
+
+model CompanyDocument {
+  id        String   @id @default(uuid())
+  title     String
+  type      String   @default("PDF")
+  url       String?
+  category  String?
+  companyId String
+  createdAt DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+}
+
+model CompanyFacility {
+  id        String   @id @default(uuid())
+  name      String
+  type      String?
+  country   String?
+  city      String?
+  companyId String
+  createdAt DateTime @default(now())
+  address   String?
+  latitude  Float?
+  longitude Float?
+  source    String?
+  company   Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+}

@@ -1,4 +1,4 @@
-﻿export interface Company {
+export interface Company {
   id: string;
   name: string;
   category: string;
@@ -7,10 +7,12 @@
   state: string;
   city: string;
   logoUrl?: string;
+  coverUrl?: string;
   initials: string;
   color: string;
   verified: boolean;
-  proximityBadge?: string;
+  proximityBadge?: "Near You" | "Country Match" | "Global";
+  addedAt?: string;
   founded: string;
   employees: string;
   website: string;
@@ -19,6 +21,8 @@
     twitter?: string;
   };
   description: string;
+  rating?: number;
+  reviewCount?: number;
   certifications?: string[];
   products?: string[];
   services?: string[];

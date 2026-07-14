@@ -84,7 +84,7 @@ export class GeolocationService {
 
     const data = await response.json();
     
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     return data.map((item: any) => ({
       latitude: parseFloat(item.lat),
       longitude: parseFloat(item.lon),
