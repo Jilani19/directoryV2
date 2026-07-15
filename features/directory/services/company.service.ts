@@ -2,27 +2,46 @@ import { api } from "../../../lib/axios";
 
 export interface Company {
   id: string;
+  slug: string;
+  categorySlug?: string;
+
   name: string;
   description: string;
+
   logoUrl?: string;
   coverUrl?: string;
   website?: string;
+
   verified: boolean;
+
   country: string;
- state?: string;
+  state?: string;
   city?: string;
+
   category: string;
   industry: string;
+
   companyType?: string;
   ownership?: string;
+
   founded: string;
   employees: string;
+
   certifications?: string[];
   products?: string[];
   services?: string[];
+
   rating?: number;
   reviewCount?: number;
+
+  tier?: number | string;
+  completenessScore?: number;
+
+  color?: string;
+  initials?: string;
+
   addedAt: string;
+
   socialLinks?: {
     linkedin?: string;
     twitter?: string;
@@ -33,7 +52,7 @@ export interface PaginatedResponse<T> {
   data: T[];
   total: number;
   page: number;
- pageSize: number;
+  pageSize: number;
   totalPages: number;
 }
 
@@ -55,7 +74,9 @@ export interface CompanyFilters {
 }
 
 export const companyService = {
-  getCompanies: async (filters: CompanyFilters): Promise<PaginatedResponse<Company>> => {
+  getCompanies: async (
+    filters: CompanyFilters
+  ): Promise<PaginatedResponse<Company>> => {
     const response = await api.get("/api/v1/company", {
       params: filters,
     });
