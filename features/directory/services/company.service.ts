@@ -1,31 +1,40 @@
-import axios from "axios";
+import { api } from "../lib/axios";
 
 export interface Company {
   id: string;
-  slug: string;
   name: string;
   description: string;
+  logoUrl?: string;
+  coverUrl?: string;
+  website?: string;
+  verified: boolean;
+  country: string;
+ state?: string;
+  city?: string;
   category: string;
   industry: string;
-  country: string;
-  state: string;
-  city: string;
-  employees: string;
-  website?: string;
-  certifications?: string[];
-  verified: boolean;
-  logoUrl?: string;
-  color: string;
-  initials: string;
-  proximityBadge?: string;
-  distanceKm?: number;
   companyType?: string;
-  rating?: number;
-  completenessScore?: number;
-  tier?: string;
-  reviewCount?: number;
+  ownership?: string;
+  founded: string;
+  employees: string;
+  certifications?: string[];
   products?: string[];
-  [key: string]: unknown;
+  services?: string[];
+  rating?: number;
+  reviewCount?: number;
+  addedAt: string;
+  socialLinks?: {
+    linkedin?: string;
+    twitter?: string;
+  };
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+ pageSize: number;
+  totalPages: number;
 }
 
 export interface CompanyFilters {
@@ -36,47 +45,31 @@ export interface CompanyFilters {
   category?: string;
   industry?: string;
   companyType?: string;
+  certifications?: string[];
   employeeSize?: string;
   revenueRange?: string;
-  certifications?: string[];
+  products?: string;
   page?: number;
   pageSize?: number;
   sort?: string;
 }
 
-export interface CompanyResponse {
-  data: Company[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
+export const companyService = {
+  getCompanies: async (filters: CompanyFilters): Promise<PaginatedResponse<Company>> => {
+    const response = await api.get("/api/v1/company", {
+      params: filters,
+    });
 
-class CompanyService {
-  async getCompanies(filters: CompanyFilters): Promise<CompanyResponse> {
-    try {
-      const response = await axios.get("/api/companies", { params: filters });
-      return response.data;
-    } catch (error) {
-      console.error("API error fetching companies:", error);
-      return { data: [], total: 0, page: 1, pageSize: 12, totalPages: 1 };
-    }
-  }
+    return response.data;
+  },
 
-  async getStats() {
-    try {
-      const response = await axios.get("/api/companies?stats=true");
-      return response.data;
-    } catch (e) {
-      return {
-        total: 0,
-        pharmaceuticals: 0,
-        biotech: 0,
-        injectables: 0,
-        medicalDevices: 0
-      };
-    }
-  }
-}
+  getCompanyBySlug: async (slug: string): Promise<Company> => {
+    const response = await api.get(`/api/v1/company/${slug}`);
+    return response.data;
+  },
 
-export const companyService = new CompanyService();
+  getStats: async () => {
+    const response = await api.get("/api/v1/company/stats");
+    return response.data;
+  },
+};
